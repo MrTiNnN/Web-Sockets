@@ -58,6 +58,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CORS_ALLOW_ALL_ORIGINS = True
 ASGI_APPLICATION = "server.asgi.application"
 
 CHANNEL_LAYERS = {
