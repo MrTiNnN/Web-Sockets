@@ -1,11 +1,14 @@
+import { useContext, useState } from "react"
+import { DataContext } from "../../context/DataContext"
+
 const Login = () => {
     // Gets global data from the context
-        const { crud } = useContext(DataContext)
+        const { crud, setAccess, setRefresh } = useContext(DataContext)
     
     
     
         // Holds the state for the form
-        const [username, setUsername] = useState('')
+        const [email, setEmail] = useState('')
         const [password, setPassword] = useState('')
     
     
@@ -15,14 +18,23 @@ const Login = () => {
             e.preventDefault()
     
             const response = await crud({
-                url: '/api/login',
+                url: '/api/user/login/',
+                method: 'post',
                 body: {
-                    username,
+                    email,
                     password
                 }
             })
     
             console.log(response)
+
+            if(response.status == 200) {
+                localStorage.setItem('access', response.data.token.access)
+                setAccess(response.data.token.access)
+
+                localStorage.setItem('refresh', response.data.token.refresh)
+                setRefresh(response.data.token.refresh)
+            }
         }
     
     
@@ -31,9 +43,10 @@ const Login = () => {
             <>
                 <form onSubmit={(e) => handleSubmit(e)}>
                     <input
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        placeholder="username"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="email"
+                        type="email"
                     />
                     <input
                         value={password}

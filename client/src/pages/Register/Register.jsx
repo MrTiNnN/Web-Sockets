@@ -3,12 +3,13 @@ import { DataContext } from "../../context/DataContext"
 
 const Register = () => {
     // Gets global data from the context
-    const { crud } = useContext(DataContext)
+    const { crud, navigate } = useContext(DataContext)
 
 
 
     // Holds the state for the form
     const [username, setUsername] = useState('')
+    const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
 
@@ -18,14 +19,20 @@ const Register = () => {
         e.preventDefault()
 
         const response = await crud({
-            url: '/api/register',
+            url: '/api/user/register/',
+            method: 'post',
             body: {
+                email,
                 username,
                 password
             }
         })
 
         console.log(response)
+
+        if(response.status == 201) {
+            navigate('/login')
+        }
     }
 
 
@@ -33,6 +40,12 @@ const Register = () => {
     return (
         <>
             <form onSubmit={(e) => handleSubmit(e)}>
+                <input
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="email"
+                    type="email"
+                />
                 <input
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
