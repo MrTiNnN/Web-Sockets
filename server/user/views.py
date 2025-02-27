@@ -7,6 +7,8 @@ from .models import CustomUser
 
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
+    # Add a custom claim for username
+    refresh['username'] = user.username
     return {
         'refresh': str(refresh),
         'access': str(refresh.access_token),

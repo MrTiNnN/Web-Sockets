@@ -27,7 +27,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 DEBUG = os.getenv('DJANGO_DEBUG')
 
-ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', 'localhost').split(',')
+ALLOWED_HOSTS = [os.getenv('DJANGO_ALLOWED_HOSTS', 'localhost').split(',')]
 
 # Application definition
 
@@ -59,6 +59,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
+
 ASGI_APPLICATION = "server.asgi.application"
 
 CHANNEL_LAYERS = {
@@ -69,6 +70,8 @@ CHANNEL_LAYERS = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "http://localhost:5174",
+    "http://localhost:5175",
 ]
 
 REST_FRAMEWORK = {
