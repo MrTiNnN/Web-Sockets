@@ -12,3 +12,13 @@ class FriendRequest(models.Model):
     recipient = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="received_requests")
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="pending")
     timestamp = models.DateTimeField(auto_now_add=True)
+
+    def are_friends(user1, user2):
+        
+        """Check if two users are friends (accepted status in either direction)"""
+
+        return FriendRequest.objects.filter(
+            sender=user1, recipient=user2, status="accepted"
+        ).exists() or FriendRequest.objects.filter(
+            sender=user2, recipient=user1, status="accepted"
+        ).exists()
