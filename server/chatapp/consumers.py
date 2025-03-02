@@ -71,6 +71,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.username = payload.get("username", "guest_user")
 
         await self.channel_layer.group_add("chat_room", self.channel_name)
+
+        await self.channel_layer.group_add(f"user_{self.username}", self.channel_name)
+
         await self.accept()
     
     async def disconnect(self, close_code):
