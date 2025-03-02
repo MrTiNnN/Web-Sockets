@@ -5,6 +5,7 @@ import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import Chat from "./pages/Chat/Chat";
+import Friends from "./pages/Friends/Friends";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/chat" element={<Chat />} />
+          <Route path="/friends" element={<Friends />} />
         </Routes>
       </DataProvider>
     </BrowserRouter>

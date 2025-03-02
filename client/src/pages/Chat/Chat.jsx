@@ -59,7 +59,10 @@ const Chat = () => {
 
       if(message.trim() === "") return;
       
-      const data = { message };
+      const data = { 
+        message,
+        action: "send_message"
+      };
       wsRef.current.send(JSON.stringify(data));
       setMessage("");
     };
