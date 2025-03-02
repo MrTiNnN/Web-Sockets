@@ -85,14 +85,30 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         if action == "send_message":
             message = data.get("message", "")
-            await self.channel_layer.group_send(
-                "chat_room",
-                {
-                    "type": "chat_message",
-                    "message": message,
-                    "username": self.username, 
-                },
-            )
+            recipient_username = data.get("recipient")
+
+            if recipient_username:
+                chat_group = self.get_chat_group_name(self.username, recipient_username)
+
+                await self.channel_layer.group_send(
+                    chat_group,
+                    {
+                        "type": "chat_message_private",
+                        "message": message,
+                        "username": self.username,
+                        "recipient": recipient_username,
+                    },
+                )
+
+            else:
+                await self.channel_layer.group_send(
+                    "chat_room",
+                    {
+                        "type": "chat_message",
+                        "message": message,
+                        "username": self.username, 
+                    },
+                )
 
         elif action == "send_friend_request":
             recipient_username = data.get("recipient")
@@ -101,6 +117,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
         elif action == "accept_friend_request":
             sender_username = data.get("sender")
             await self.accept_friend_request(sender_username)
+
+        elif action == "join_friend_chat":
+            recipient_username = data.get("recipient")
+            is_friends = await self.check_friendship(recipient_username)
+            if is_friends:
+                chat_group = self.get_chat_group_name(self.username, recipient_username)
+
+                await self.channel_layer.group_add(chat_group, self.channel_name)
+
+                await self.send(text_data=json.dumps({"message": f"Joined chat with {recipient_username} , this is the chat's name: {chat_group}"}))
+            else:
+                await self.send(text_data=json.dumps({"error": "You are not friends with this user."}))
 
     @database_sync_to_async
     def get_user_by_username(self, username):
@@ -201,4 +229,20 @@ class ChatConsumer(AsyncWebsocketConsumer):
             "username": event["username"],     
         }))
 
+    async def chat_message_private(self, event):
+        await self.send(text_data=json.dumps({
+            "message": event["message"],
+            "username": event["username"],   
+            "recipient": event["recipient"],
+        }))
 
+    @database_sync_to_async
+    def check_friendship(self, recipient_username):
+        """Check if two users are friends"""
+        recipient = CustomUser.objects.get(username=recipient_username)
+        user = CustomUser.objects.get(username=self.username)
+        return FriendRequest.are_friends(user, recipient)  
+
+    def get_chat_group_name(self, user1, user2):
+        """Create a unique chat group name for two users"""
+        return f"chat_{user1}_{user2}"
