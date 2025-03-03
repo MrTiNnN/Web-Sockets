@@ -1,13 +1,20 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { DataContext } from "../../context/DataContext";
 import './chat.less'
+import { useParams } from "react-router-dom";
 
 const Chat = () => {
+    // Holds the chat
+    const { username } = useParams()
+
     // Holds all messages
     const [messages, setMessages] = useState([]);
 
     // Holds the current message being typed
     const [message, setMessage] = useState("");
+
+    // Holds the error state for the chat
+    const [error, setError] = useState(null)
 
 
 
@@ -29,13 +36,20 @@ const Chat = () => {
       // Logs the successful connection
       wsRef.current.onopen = () => {
         console.log("Connected to WebSocket");
+
+        wsRef.current.send(JSON.stringify({
+          action: "join_friend_chat",
+          recipient: username
+        }))
       };
 
 
       // Receives the messages from the web socket server
       wsRef.current.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        setMessages((prev) => [...prev, data]);
+        console.log(data)
+        if(data.message) setMessages((prev) => [...prev, data]);
+        else if(data.error) setError(data.error)
       };
 
 
@@ -60,9 +74,11 @@ const Chat = () => {
       if(message.trim() === "") return;
       
       const data = { 
+        action: "send_message",
         message,
-        action: "send_message"
+        recipient: username
       };
+      console.log(data)
       wsRef.current.send(JSON.stringify(data));
       setMessage("");
     };
@@ -70,14 +86,18 @@ const Chat = () => {
 
 
     return (
+      error ?
+      <p>{error}</p>
+      :
       <div className="chat-container">
 
-        <h2>Chat</h2>
+        <h1>{username}</h1>
         <div className="chat">
           {
             messages.map((msg, index) => (
               <div key={index}>
-                <strong>{msg.username}:</strong> {msg.message}
+                {msg.username && <strong>{msg.username}: </strong>}
+                {msg.message}
               </div>
             ))
           }

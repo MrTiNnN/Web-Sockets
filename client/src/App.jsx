@@ -16,7 +16,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/chat" element={<Chat />} />
+          <Route path="/chat/:username" element={<Chat />} />
           <Route path="/friends" element={<Friends />} />
         </Routes>
       </DataProvider>
