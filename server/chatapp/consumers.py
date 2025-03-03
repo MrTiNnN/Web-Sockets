@@ -151,6 +151,37 @@ class ChatConsumer(AsyncWebsocketConsumer):
             recipient_username = data.get("recipient")
             await self.decline_friend_request(recipient_username)
 
+        # LOADS MESSAGES FOR FRONTEND
+        elif action == "load_more_messages":
+            last_message_id = data.get("last_message_id")
+            recipient_username = data.get("recipient")
+            batch_size = 50
+
+            if recipient_username:
+                chat_group_name = self.get_chat_group_name(self.username, recipient_username)
+
+                if last_message_id:
+                    pass
+
+                else:
+                    last_message_id = await self.get_last_message_id(chat_group_name)
+
+                messages = await self.get_messages_in_range(chat_group_name, last_message_id, batch_size)
+
+            else:
+                if last_message_id:
+                    pass
+
+                else:
+                    last_message_id = await self.get_last_message_id("chat_room")
+                
+                messages = await self.get_messages_in_range("chat_room", last_message_id, batch_size)
+
+            await self.send(text_data=json.dumps({
+                "action": "load_more_messages",
+                "messages": messages,
+            }))
+
     # FUNCTION FOR GETTING USERS
     @database_sync_to_async
     def get_user_by_username(self, username):
@@ -165,6 +196,28 @@ class ChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def get_pending_friend_request(self, sender, recipient):
         return FriendRequest.objects.filter(sender=sender, recipient=recipient, status="pending").first()
+
+    # GETS THE MESSAGES WANTED TO SEND
+    @database_sync_to_async
+    def get_messages_in_range(self, chat_room, last_message_id, batch_size):
+        start_id = last_message_id - batch_size
+
+        messages = ChatMessages.objects.filter(
+            chat_room=chat_room,
+            id__lt=last_message_id,
+            id__gte=start_id,  
+        )
+
+        return list(messages.values("id", "message", "sender__username"))
+
+    # GET LAST MESSAGE ID
+    @database_sync_to_async
+    def get_last_message_id(self, chat_room):
+        last_message = ChatMessages.objects.filter(chat_room=chat_room).order_by('-id').first()
+
+        if last_message:
+            return last_message.id
+        return None
 
     # CHECK IF TWO USERS ARE FRIENDS
     @database_sync_to_async
