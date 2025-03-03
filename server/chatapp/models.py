@@ -13,12 +13,7 @@ class FriendRequest(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="pending")
     timestamp = models.DateTimeField(auto_now_add=True)
 
+    # CHECK IF TWO USERS ARE FRIENDS (ACCEPTED STATUS IN EITHER DIRECTION)
     def are_friends(user1, user2):
-        
-        """Check if two users are friends (accepted status in either direction)"""
-
-        return FriendRequest.objects.filter(
-            sender=user1, recipient=user2, status="accepted"
-        ).exists() or FriendRequest.objects.filter(
-            sender=user2, recipient=user1, status="accepted"
-        ).exists()
+        return FriendRequest.objects.filter(sender=user1, recipient=user2, status="accepted"
+                                           ).exists() or FriendRequest.objects.filter(sender=user2, recipient=user1, status="accepted").exists()
