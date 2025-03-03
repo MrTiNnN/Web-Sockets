@@ -17,3 +17,9 @@ class FriendRequest(models.Model):
     def are_friends(user1, user2):
         return FriendRequest.objects.filter(sender=user1, recipient=user2, status="accepted"
                                            ).exists() or FriendRequest.objects.filter(sender=user2, recipient=user1, status="accepted").exists()
+
+class ChatMessages(models.Model):
+    message = models.TextField()
+    sender = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="sent_message")
+    timestamp = models.DateTimeField(auto_now_add=True)
+    chat_room = models.CharField(max_length=255)

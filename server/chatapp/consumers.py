@@ -10,7 +10,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "server.settings")
 django.setup()
 
 from user.models import CustomUser
-from .models import FriendRequest
+from .models import FriendRequest, ChatMessages
 from channels.db import database_sync_to_async
 
 # JWT BASE64 URL DECODE
@@ -109,6 +109,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     },
                 )
 
+                await self.save_message(self.username, message, chat_group)
+
             else:
                 await self.channel_layer.group_send(
                     "chat_room",
@@ -118,6 +120,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         "username": self.username, 
                     },
                 )
+
+                await self.save_message(self.username, message, "chat_room")
 
         # SEND RFIEND REQUEST
         elif action == "send_friend_request":
@@ -328,3 +332,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
             "username": event["username"],   
             "recipient": event["recipient"],
         }))
+
+
+    # SAVES MESSAGES IN THE DATABASE
+    @database_sync_to_async
+    def save_message(self, sender_username, message, chat_room):
+        sender = CustomUser.objects.get(username = sender_username)
+
+        ChatMessages.objects.create(message = message, sender = sender, chat_room = chat_room)
