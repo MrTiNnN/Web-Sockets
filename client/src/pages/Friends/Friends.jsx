@@ -36,7 +36,7 @@ const Friends = () => {
             console.log("📩 Message received:", data);
 
             if(data.action === "friend_request") {
-                setPending([...pending, data])
+                setPending((prev) => [...prev, data])
             }
         };
 
@@ -80,15 +80,20 @@ const Friends = () => {
         }))
 
         const newPending = pending.filter(request => request.sender !== sender)
-        console.log(newPending)
         setPending(newPending)
     }
 
 
 
     // Rejects a friend request
-    const handleRejectFriend = () => {
+    const handleRejectFriend = (recipient) => {
+        socket.current.send(JSON.stringify({
+            action: "decline_friend_request",
+            recipient
+        }))
 
+        const newPending = pending.filter(request => request.sender !== recipient)
+        setPending(newPending)
     }
 
 
@@ -109,7 +114,7 @@ const Friends = () => {
                     <div key={i}>
                         <p>{request.sender}</p>
                         <button onClick={() => handleAcceptFriend(request.sender)}>Accept</button>
-                        <button onClick={handleRejectFriend}>Reject</button>
+                        <button onClick={() => handleRejectFriend(request.sender)}>Reject</button>
                     </div>
                 ))
             }
