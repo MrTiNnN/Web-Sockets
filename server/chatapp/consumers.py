@@ -154,7 +154,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     # CREATE A UNIQUE CHAT GROUP NAME FOR TWO USERS
     def get_chat_group_name(self, user1, user2):
-        return f"chat_{user1}_{user2}"
+        sorted_users = sorted([user1, user2])
+        return f"chat_{sorted_users[0]}_{sorted_users[1]}"
 
     # GET THE PENDING FRIND REQUEST
     @database_sync_to_async
