@@ -265,25 +265,31 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             friend_request = await database_sync_to_async(
             lambda: FriendRequest.objects.filter(sender=sender, recipient=recipient, status="pending").first()
-        )()
+            )()
 
             if friend_request:
-                sender = await self.get_user_by_username(recipient_username)
-                recipient = await self.get_user_by_username(self.username)
 
                 await self.decline_request(sender, recipient)
 
                 await self.channel_layer.group_send(
                     f"user_{self.username}",
                     {
-                        "type": "decline_friend_request",
+                        "type": "friend_decline_request",
                         "sender": recipient_username,
                         "recipient": self.username,
                     },
                 )
+                return
             else:
                 await self.send(text_data=json.dumps({"error": "No pending friend request found."}))
         except CustomUser.DoesNotExist:
             await self.send(text_data=json.dumps({"error": "User not found."}))
         except Exception as e:
             await self.send(text_data=json.dumps({"error": f"Decline unsuccessful: {str(e)}"}))
+
+    async def friend_decline_request(self, event):
+        await self.send(text_data=json.dumps({
+            "action": "decline_request",
+            "sender": event["sender"],
+            "recipient": event["recipient"],
+        }))
