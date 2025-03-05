@@ -1,16 +1,13 @@
 import { useContext, useEffect, useRef, useState } from "react"
 import { DataContext } from "../../context/DataContext"
-import Sidebar from "../../components/Sidebar/Sidebar"
 import '../../globalStyling/components.less'
 import './friends.less'
-import user from "../../img/user.png"
-import { IoCheckmark, IoClose, IoChatbubbleSharp } from "react-icons/io5";
-import { Link } from "react-router";
+import FriendForm from './components/FriendForm/FriendForm'
+import PendingList from './components/PendingList/PendingList'
+import OutGoingList from './components/OutGoingList/OutGoingList'
+import FriendsList from './components/FriendsList/FriendsList'
 
 const Friends = () => {
-    // Holds the username input for the friend request
-    const [username, setUsername] = useState("")
-
     // Holds the pending requests
     const [pending, setPending] = useState([])
 
@@ -131,132 +128,38 @@ const Friends = () => {
     }, [access])
 
 
-    // Sends a friend request
-    const handleSubmit = (e) => {
-        e.preventDefault()
-
-        if(username.trim() === "") return
-
-        const data = {
-            action: "send_friend_request",
-            recipient: username
-        }
-
-        setOutGoing([{ recipient: username }, ...outGoing])
-        socket.current.send(JSON.stringify(data))
-
-        setUsername("")
-    }
-
-
-
-    // Accepts a friend request
-    const handleAcceptFriend = (sender) => {
-        socket.current.send(JSON.stringify({
-            action: "accept_friend_request",
-            sender
-        }))
-
-        const newPending = pending.filter(request => request.sender !== sender)
-        setPending(newPending)
-
-        const newFriends = [ { username: sender }, ...friends ]
-        setFriends(newFriends)
-    }
-
-
-
-    // Rejects a friend request
-    const handleRejectFriend = (recipient) => {
-        socket.current.send(JSON.stringify({
-            action: "decline_friend_request",
-            recipient
-        }))
-
-        const newPending = pending.filter(request => request.sender !== recipient)
-        setPending(newPending)
-    }
-
-
 
     return (
         <section className="section-friends">
-            <form className="add-friend-form" onSubmit={(e) => handleSubmit(e)}>
-                <input
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                />
-                <button className="btn" type="submit">Add friend</button>
-            </form>
+            <FriendForm
+                socket={socket}
+                outGoing={outGoing}
+                setOutGoing={setOutGoing}
+            />
 
             <div className="lists-container">
-
                 {
                     pending && pending.length > 0 &&
-                    <div className="list-container">
-                        <p className="label"><strong>Received</strong></p>
-                        <div className="list">
-                            {
-                                pending.map((request, i) => (
-                                    <div className="friend" key={i}>
-                                        <div className="friend-label">
-                                            <img src={user} alt="Pfp" />
-                                            <p>{request.sender}</p>
-                                        </div>
-                                        <div className="button-box">
-                                            <IoCheckmark className="icon" onClick={() => handleAcceptFriend(request.sender)} />
-                                            <IoClose className="icon secondary" onClick={() => handleRejectFriend(request.sender)} />
-                                        </div>
-                                    </div>
-                                ))
-                            }
-                        </div>
-                    </div>
+                    <PendingList
+                        socket={socket}
+                        pending={pending}
+                        setPending={setPending}
+                        friends={friends}
+                        setFriends={setFriends}
+                    />
                 }
-
                 {
                     outGoing && outGoing.length > 0 &&
-                    <div className="list-container">
-                        <p className="label"><strong>Outgoing</strong></p>
-                        <div className="list">
-                            {
-                                outGoing.map((request, i) => (
-                                    <div className="friend" key={i}>
-                                        <div className="friend-label">
-                                            <img src={user} alt="Pfp" />
-                                            <p>{request.recipient}</p>
-                                        </div>
-                                    </div>
-                                ))
-                            }
-                        </div>
-                    </div>
+                    <OutGoingList
+                        outGoing={outGoing}
+                    />
                 }
-
                 {
                     friends && friends.length > 0 &&
-                    <div className="list-container">
-                        <p className="label"><strong>Friends</strong></p>
-                        <div className="list">
-                            {
-                                friends.map((friend, i) => (
-                                    <div className="friend" key={i}>
-                                        <div className="friend-label">
-                                            <img src={user} alt="Pfp" />
-                                            <p>{friend.username}</p>
-                                        </div>
-
-                                        <div className="button-box">
-                                            <Link to={`/dashboard/chat/${friend.username}`}><IoChatbubbleSharp className="icon"/></Link>
-                                        </div>
-                                    </div>
-                                ))
-                            }
-                        </div>
-                    </div>
+                    <FriendsList
+                        friends={friends}
+                    />
                 }
-
             </div>
         </section>
     )
