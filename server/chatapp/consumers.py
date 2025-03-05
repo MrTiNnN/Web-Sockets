@@ -143,7 +143,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
                 await self.channel_layer.group_add(chat_group, self.channel_name)
 
-                await self.send(text_data=json.dumps({"message": f"Joined chat with {recipient_username} , this is the chat's name: {chat_group}"}))
+                await self.send(text_data=json.dumps({"message": f"Joined chat with {recipient_username} , this is the chat's name: {chat_group}", "action": action}))
             else:
                 await self.send(text_data=json.dumps({"error": "You are not friends with this user."}))
 
@@ -437,6 +437,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     # NORMAL CHAT MESSAGE
     async def chat_message(self, event):
         await self.send(text_data=json.dumps({
+            "action": "chat_message",
             "message": event["message"],
             "username": event["username"],     
         }))
@@ -444,6 +445,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     # PRIVATE CHAT MESSAGE
     async def chat_message_private(self, event):
         await self.send(text_data=json.dumps({
+            "action": "chat_message_private",
             "message": event["message"],
             "username": event["username"],   
             "recipient": event["recipient"],
