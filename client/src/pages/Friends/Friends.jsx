@@ -26,6 +26,10 @@ const Friends = () => {
         // Logs the successful connection
         socket.current.onopen = () => {
             console.log("Connected to WebSocket");
+
+            socket.current.send(JSON.stringify({
+                action: "get_friend_requests"
+            }))
         };
 
 
