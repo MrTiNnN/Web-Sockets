@@ -8,6 +8,9 @@ const Friends = () => {
     // Holds the pending requests
     const [pending, setPending] = useState([])
 
+    // Holds the outgoing requests
+    const [outGoing, setOutGoing] = useState([])
+
     // Holds the user's friends
     const [friends, setFriends] = useState([])
 
@@ -35,7 +38,7 @@ const Friends = () => {
                 action: "get_user_friends"
             }))
 
-            // Gets the user's pending requests
+            // Gets the user's received requests
             socket.current.send(JSON.stringify({
                 action: "get_friend_requests"
             }))
@@ -54,10 +57,10 @@ const Friends = () => {
             console.log("📩 Message received:", data);
 
             if(data.type === "send_data") {
-
+                
                 // Gets friends list
                 if(data.action === "get_user_friends") {
-                    if(data.user_friends.length) {
+                    if(data.user_friends && data.user_friends.length) {
                         const friendArr = data.user_friends.map(friend => {
                             return {
                                 id: friend.id,
@@ -67,11 +70,45 @@ const Friends = () => {
 
                         if(friendArr && friendArr.length) setFriends(friendArr)
                     }
+
+
                 }
+
+                // Gets received requests
+                if(data.action === "get_friend_requests") {
+                    if(data.friend_requests && data.friend_requests.length) {
+                        let requestArr = data.friend_requests.filter(request => request.status === "pending")
+                        requestArr = requestArr.map(request => {
+                            return { sender: request.sender__username }
+                        })
+                        // console.log(requestArr)
+                        setPending([...pending, ...requestArr])
+                    }
+                }
+
+                // Gets outgoing requests
+                if(data.action === "get_friend_requests_send_from_you") {
+                    if(data.get_friend_requests_send_from_you && data.get_friend_requests_send_from_you.length) {
+                        let requestArr = data.get_friend_requests_send_from_you.filter(request => request.status === "pending")
+                        requestArr = requestArr.map(request => {
+                            return { recipient: request.recipient__username }
+                        })
+                        setOutGoing([...outGoing, ...requestArr])
+                    }
+                }
+
             }
 
+            // Receives a friend request
             if(data.action === "friend_request") {
-                setPending((prev) => [...prev, data])
+                const request = { sender: data.sender }
+                setPending((prev) => [request, ...prev])
+            }
+
+            // Handles an accepted request
+            if(data.action === "friend_request_accepted") {
+                const newOutGoing = outGoing.filter(request => request.recipient !== data.sender)
+                setOutGoing([...newOutGoing])
             }
         };
 
@@ -88,7 +125,6 @@ const Friends = () => {
     }, [access])
 
 
-
     // Sends a friend request
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -100,6 +136,7 @@ const Friends = () => {
             recipient: username
         }
 
+        setOutGoing([{ recipient: username }, ...outGoing])
         socket.current.send(JSON.stringify(data))
 
         setUsername("")
@@ -116,6 +153,9 @@ const Friends = () => {
 
         const newPending = pending.filter(request => request.sender !== sender)
         setPending(newPending)
+
+        const newFriends = [ { username: sender }, ...friends ]
+        setFriends(newFriends)
     }
 
 
@@ -144,24 +184,40 @@ const Friends = () => {
                 <button type="submit">Add friend</button>
             </form>
 
-            {
-                pending.map((request, i) => (
-                    <div key={i}>
-                        <p>{request.sender}</p>
-                        <button onClick={() => handleAcceptFriend(request.sender)}>Accept</button>
-                        <button onClick={() => handleRejectFriend(request.sender)}>Reject</button>
-                    </div>
-                ))
-            }
+            <div>
+                <strong>Received</strong>
+                {
+                    pending.map((request, i) => (
+                        <div key={i}>
+                            <p>{request.sender}</p>
+                            <button onClick={() => handleAcceptFriend(request.sender)}>Accept</button>
+                            <button onClick={() => handleRejectFriend(request.sender)}>Reject</button>
+                        </div>
+                    ))
+                }
+            </div>
 
-            <strong>Friends</strong>
-            {
-                friends.map((friend, i) => (
-                    <div key={i}>
-                        <p>{friend.username}</p>
-                    </div>
-                ))
-            }
+            <div>
+                <strong>Outgoing</strong>
+                {
+                    outGoing.map((request, i) => (
+                        <div key={i}>
+                            <p>{request.recipient}</p>
+                        </div>
+                    ))
+                }
+            </div>
+
+            <div>
+                <strong>Friends</strong>
+                {
+                    friends.map((friend, i) => (
+                        <div key={i}>
+                            <p>{friend.username}</p>
+                        </div>
+                    ))
+                }
+            </div>
         </>
     )
 }
