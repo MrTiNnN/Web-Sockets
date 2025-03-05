@@ -1,0 +1,93 @@
+.section-friends {
+    // background-color: aqua;
+    flex-grow: 1;
+
+    .add-friend-form {
+        width: 100%;
+        position: relative;
+        margin-bottom: 3.2rem;
+
+        input {
+            width: 100%;
+            border-radius: 5rem;
+            border: none;
+            padding: 1.6rem 1.2rem;
+            font-family: inherit;
+            background-color: var(--primary-tint-60);
+            color: var(--primary-shade-40);
+
+            &::placeholder {
+                color: var(--primary-shade-10);
+            }
+        }
+
+        .btn {
+            position: absolute;
+            top: 50%;
+            right: 1.2rem;
+            transform: translateY(-50%);
+
+            border-radius: 5rem;
+        }
+    }
+
+    .lists-container {
+        padding: 0 2.4rem;
+
+        .list-container {
+            .label {
+                text-transform: uppercase;
+                color: #5c5c5c;
+                margin-bottom: 1.2rem;
+            }
+
+            .list {
+                display: flex;
+                flex-direction: column;
+                gap: 1.6rem;
+
+                .friend {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 1.2rem 2.4rem;
+                    box-shadow: 0 0 1.2rem rgba(149, 181, 251, 0.25);
+                    border-radius: 2rem;
+                    background-color: var(--secondary);
+
+                    .friend-label {
+                        display: flex;
+                        align-items: center;
+                        color: var(--primary-shade-40);
+                        gap: 0.8rem;
+
+                        img {
+                            width: 4.8rem;
+                        }
+                    }
+
+                    .button-box {
+                        display: flex;
+                        gap: 1.2rem;
+
+                        .icon {
+                            background-color: var(--primary-tint-10);
+                            color: var(--primary-shade-50);
+                            border-radius: 1.6rem;
+                            width: 3.6rem;
+                            height: 3.6rem;
+                            padding: 0.8rem;
+                            cursor: pointer;
+
+                            &.secondary {
+                                background-color: var(--secondary);
+                                border: solid 0.1rem var(--primary-tint-10);
+                                color: var(--primary-tint-10);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

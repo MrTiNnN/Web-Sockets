@@ -2,6 +2,10 @@ import { useContext, useEffect, useRef, useState } from "react"
 import { DataContext } from "../../context/DataContext"
 import Sidebar from "../../components/Sidebar/Sidebar"
 import '../../globalStyling/components.less'
+import './friends.less'
+import user from "../../img/user.png"
+import { IoCheckmark, IoClose, IoChatbubbleSharp } from "react-icons/io5";
+import { Link } from "react-router";
 
 const Friends = () => {
     // Holds the username input for the friend request
@@ -176,52 +180,85 @@ const Friends = () => {
 
 
     return (
-        <>
-            {/* <Sidebar chats={friends} /> */}
-            <form onSubmit={(e) => handleSubmit(e)}>
+        <section className="section-friends">
+            <form className="add-friend-form" onSubmit={(e) => handleSubmit(e)}>
                 <input
                     placeholder="Username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                 />
-                <button type="submit">Add friend</button>
+                <button className="btn" type="submit">Add friend</button>
             </form>
 
-            <div>
-                <strong>Received</strong>
-                {
-                    pending.map((request, i) => (
-                        <div key={i}>
-                            <p>{request.sender}</p>
-                            <button onClick={() => handleAcceptFriend(request.sender)}>Accept</button>
-                            <button onClick={() => handleRejectFriend(request.sender)}>Reject</button>
-                        </div>
-                    ))
-                }
-            </div>
+            <div className="lists-container">
 
-            <div>
-                <strong>Outgoing</strong>
                 {
-                    outGoing.map((request, i) => (
-                        <div key={i}>
-                            <p>{request.recipient}</p>
+                    pending && pending.length > 0 &&
+                    <div className="list-container">
+                        <p className="label"><strong>Received</strong></p>
+                        <div className="list">
+                            {
+                                pending.map((request, i) => (
+                                    <div className="friend" key={i}>
+                                        <div className="friend-label">
+                                            <img src={user} alt="Pfp" />
+                                            <p>{request.sender}</p>
+                                        </div>
+                                        <div className="button-box">
+                                            <IoCheckmark className="icon" onClick={() => handleAcceptFriend(request.sender)} />
+                                            <IoClose className="icon secondary" onClick={() => handleRejectFriend(request.sender)} />
+                                        </div>
+                                    </div>
+                                ))
+                            }
                         </div>
-                    ))
+                    </div>
                 }
-            </div>
 
-            <div>
-                <strong>Friends</strong>
                 {
-                    friends.map((friend, i) => (
-                        <div key={i}>
-                            <p>{friend.username}</p>
+                    outGoing && outGoing.length > 0 &&
+                    <div className="list-container">
+                        <p className="label"><strong>Outgoing</strong></p>
+                        <div className="list">
+                            {
+                                outGoing.map((request, i) => (
+                                    <div className="friend" key={i}>
+                                        <div className="friend-label">
+                                            <img src={user} alt="Pfp" />
+                                            <p>{request.recipient}</p>
+                                        </div>
+                                    </div>
+                                ))
+                            }
                         </div>
-                    ))
+                    </div>
                 }
+
+                {
+                    friends && friends.length > 0 &&
+                    <div className="list-container">
+                        <p className="label"><strong>Friends</strong></p>
+                        <div className="list">
+                            {
+                                friends.map((friend, i) => (
+                                    <div className="friend" key={i}>
+                                        <div className="friend-label">
+                                            <img src={user} alt="Pfp" />
+                                            <p>{friend.username}</p>
+                                        </div>
+
+                                        <div className="button-box">
+                                            <Link to={`/dashboard/chat/${friend.username}`}><IoChatbubbleSharp className="icon"/></Link>
+                                        </div>
+                                    </div>
+                                ))
+                            }
+                        </div>
+                    </div>
+                }
+
             </div>
-        </>
+        </section>
     )
 }
  
