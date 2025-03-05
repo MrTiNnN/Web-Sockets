@@ -5,6 +5,7 @@ import base64
 import time
 import os
 import django
+from itertools import chain
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "server.settings")
 django.setup()
@@ -182,6 +183,46 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "messages": messages,
             }))
 
+        # GETS THE FRIEND REQUESTS OF A USER
+        elif action == "get_friend_requests":
+            user = await self.get_user_by_username(self.username)
+            friend_requests = await self.get_friend_requests(user)
+            await self.channel_layer.group_send(
+            f"user_{self.username}",
+            {
+                "type": "send_data",
+                "action": "get_friend_requests",
+                "friend_requests": friend_requests,
+            }
+        )
+
+        # GETS THE FRIEND REQUESTS SEND FROM A USER
+        elif action == "get_friend_requests_send_from_you":
+            user = await self.get_user_by_username(self.username)
+            get_friend_requests_send_from_you = await self.get_friend_requests_send_from_you(user)
+            await self.channel_layer.group_send(
+            f"user_{self.username}",
+            {
+                "type": "send_data",
+                "action": "get_friend_requests_send_from_you",
+                "get_friend_requests_send_from_you": get_friend_requests_send_from_you,
+            }
+        )
+
+        # GETS USER'S FRIENDS
+        elif action == "get_user_friends":
+            user = await self.get_user_by_username(self.username)
+            get_user_friends = await self.get_user_friends(user)
+            await self.channel_layer.group_send(
+            f"user_{self.username}",
+            {
+                "type": "send_data",
+                "action": "get_user_friends",
+                "user_friends": get_user_friends,
+            }
+        )
+
+
     # FUNCTION FOR GETTING USERS
     @database_sync_to_async
     def get_user_by_username(self, username):
@@ -219,6 +260,28 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return last_message.id
         return None
 
+    # RETURNS THE MESSAGE SEND TO A USER
+    @database_sync_to_async
+    def get_friend_requests(self, user):
+        friend_requests = FriendRequest.objects.filter(recipient = user)
+        return list(friend_requests.values('id', 'sender', 'recipient', 'status'))
+    
+    # GET FRIEND REQUEST THAT YOU SEND
+    @database_sync_to_async
+    def get_friend_requests_send_from_you(self, user):
+        friend_requests = FriendRequest.objects.filter(sender = user)
+        return list(friend_requests.values('id', 'sender', 'recipient', 'status'))
+    
+    # GET WHO IS YOUR FRINED
+    @database_sync_to_async
+    def get_user_friends(self, user):   
+        requests1 = FriendRequest.objects.filter(sender=user, status="accepted")
+        requests2 = FriendRequest.objects.filter(recipient=user, status="accepted")
+        
+        combined_requests = list(chain(requests1.values('id', 'sender', 'recipient', 'status'),
+                                   requests2.values('id', 'sender', 'recipient', 'status')))
+        return combined_requests
+    
     # CHECK IF TWO USERS ARE FRIENDS
     @database_sync_to_async
     def check_friendship(self, recipient_username):
@@ -386,6 +449,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
             "recipient": event["recipient"],
         }))
 
+    # HANDELES SENDING DATA
+    async def send_data(self, event):
+        await self.send(text_data=json.dumps(event))
 
     # SAVES MESSAGES IN THE DATABASE
     @database_sync_to_async

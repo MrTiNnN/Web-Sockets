@@ -20,5 +20,5 @@ class SpamDataset(Dataset):
         return {
             'prompt': item['prompt'],
             'vectorized_prompt': vectorized_prompt,
-            'label': item['label']
+            'label': torch.tensor(item['label'], dtype=torch.float)
         }
