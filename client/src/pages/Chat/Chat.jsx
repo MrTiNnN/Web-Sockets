@@ -28,6 +28,39 @@ const Chat = () => {
 
 
 
+    useEffect(() => {
+      if(messages.length <= 51) chatRef.current.scrollTop = chatRef.current.scrollHeight
+    }, [messages.length])
+
+
+
+    // Stores the chat box
+    const chatRef = useRef()
+    const [chatScroll, setChatScroll] = useState(0)
+
+    useEffect(() => {
+      console.log(chatScroll)
+    }, [chatScroll]) 
+
+
+
+    // Loads more messages
+    const handleLoadMore = (last_message_id) => {
+
+      if(chatRef.current.scrollTop == 0) {
+
+        wsRef.current.send(JSON.stringify({
+          action: "load_more_messages",
+          recipient: username,
+          last_message_id
+        }))
+
+      }
+
+    }
+
+
+
     // Connects the web socket server
     useEffect(() => {
       wsRef.current = new WebSocket(`ws://localhost:8000/ws/chat/?token=${access}`);
@@ -41,15 +74,37 @@ const Chat = () => {
           action: "join_friend_chat",
           recipient: username
         }))
+
+        handleLoadMore(0)
       };
 
 
       // Receives the messages from the web socket server
       wsRef.current.onmessage = (event) => {
-        const data = JSON.parse(event.data);
+        // Parses the data
+        const data = JSON.parse(event.data)
         console.log(data)
-        if(data.message) setMessages((prev) => [...prev, data]);
-        else if(data.error) setError(data.error)
+
+        // Handles new message
+        if(data.message) {
+          // console.log({ message: data.message, sender__username: data.username })
+          setMessages((prev) => [...prev, { message: data.message, sender__username: data.username }])
+          chatRef.current.scrollTop = chatRef.current.scrollHeight
+        }
+        
+        // Handles loading more messages
+        if(data.action && data.action === "load_more_messages") {
+          setMessages((prev) => [...data.messages, ...prev])
+          if(messages.length > 51) {
+            setChatScroll(chatRef.current.scrollTop)
+            // chatRef.current.scrollTop = chatRef.current.scrollHeight
+            // console.log(chatRef.current.children.length)
+            // console.log(chatRef.current.children[chatRef.current.children.length - 1])
+          }
+        }
+        
+        // Handles errors
+        if(data.error) setError(data.error)
       };
 
 
@@ -78,7 +133,7 @@ const Chat = () => {
         message,
         recipient: username
       };
-      console.log(data)
+      // console.log(data)
       wsRef.current.send(JSON.stringify(data));
       setMessage("");
     };
@@ -92,11 +147,11 @@ const Chat = () => {
       <div className="chat-container">
 
         <h1>{username}</h1>
-        <div className="chat">
+        <div className="chat" onScroll={() => handleLoadMore(messages[0].id)} ref={chatRef}>
           {
             messages.map((msg, index) => (
               <div key={index}>
-                {msg.username && <strong>{msg.username}: </strong>}
+                {msg.sender__username && <strong>{msg.sender__username}: </strong>}
                 {msg.message}
               </div>
             ))
