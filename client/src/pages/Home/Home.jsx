@@ -1,10 +1,11 @@
 import Message from "../../components/Message/Message"
+import HeroImage from "./components/HeroImage/HeroImage"
+import './home.less'
 
 const Home = () => {
     return (
         <>
-            <Message message={"I want to lick you"} type="out"/>
-            <Message message={"I want to lick you"} type="in"/>
+            <HeroImage />
         </>
     )
 }
