@@ -8,6 +8,9 @@ const Friends = () => {
     // Holds the pending requests
     const [pending, setPending] = useState([])
 
+    // Holds the user's friends
+    const [friends, setFriends] = useState([])
+
 
 
     // Gets global data from the context
@@ -27,8 +30,19 @@ const Friends = () => {
         socket.current.onopen = () => {
             console.log("Connected to WebSocket");
 
+            // Gets the user's friend list
+            socket.current.send(JSON.stringify({
+                action: "get_user_friends"
+            }))
+
+            // Gets the user's pending requests
             socket.current.send(JSON.stringify({
                 action: "get_friend_requests"
+            }))
+
+            // Gets the user's pending requests
+            socket.current.send(JSON.stringify({
+                action: "get_friend_requests_send_from_you"
             }))
         };
 
@@ -38,6 +52,23 @@ const Friends = () => {
             // const data = JSON.parse(event.data);
             const data = JSON.parse(event.data);
             console.log("📩 Message received:", data);
+
+            if(data.type === "send_data") {
+
+                // Gets friends list
+                if(data.action === "get_user_friends") {
+                    if(data.user_friends.length) {
+                        const friendArr = data.user_friends.map(friend => {
+                            return {
+                                id: friend.id,
+                                username: friend.sender__username ? friend.sender__username : friend.recipient__username
+                            }
+                        })
+
+                        if(friendArr && friendArr.length) setFriends(friendArr)
+                    }
+                }
+            }
 
             if(data.action === "friend_request") {
                 setPending((prev) => [...prev, data])
@@ -119,6 +150,15 @@ const Friends = () => {
                         <p>{request.sender}</p>
                         <button onClick={() => handleAcceptFriend(request.sender)}>Accept</button>
                         <button onClick={() => handleRejectFriend(request.sender)}>Reject</button>
+                    </div>
+                ))
+            }
+
+            <strong>Friends</strong>
+            {
+                friends.map((friend, i) => (
+                    <div key={i}>
+                        <p>{friend.username}</p>
                     </div>
                 ))
             }
