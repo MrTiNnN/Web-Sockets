@@ -16,7 +16,7 @@ const LayoutGrid = ({ type, color = 'rgba(255, 0, 0, 0.1)' }) => {
 
     // Updates the grid properties using the CSS variables for them
     const handleResize = () => {
-        if(type === 'screen') {
+        if (type === 'screen') {
             let root = getComputedStyle(document.documentElement)
 
             setPadding(root.getPropertyValue('--grid-padding').trim())
@@ -36,7 +36,7 @@ const LayoutGrid = ({ type, color = 'rgba(255, 0, 0, 0.1)' }) => {
         return () => window.removeEventListener('resize', handleResize)
     }, [])
 
-    
+
 
     return (
         <>
