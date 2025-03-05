@@ -1,7 +1,10 @@
+import Message from "../../components/Message/Message"
+
 const Home = () => {
     return (
         <>
-            Home 
+            <Message message={"I want to lick you"} type="out"/>
+            <Message message={"I want to lick you"} type="in"/>
         </>
     )
 }
