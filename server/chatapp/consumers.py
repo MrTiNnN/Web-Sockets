@@ -275,11 +275,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
     # GET WHO IS YOUR FRINED
     @database_sync_to_async
     def get_user_friends(self, user):   
-        requests1 = FriendRequest.objects.filter(sender=user, status="accepted").select_related('sender')
-        requests2 = FriendRequest.objects.filter(recipient=user, status="accepted").select_related('recipient')
+        requests1 = FriendRequest.objects.filter(sender=user, status="accepted").select_related('recipient')
+        requests2 = FriendRequest.objects.filter(recipient=user, status="accepted").select_related('sender')
         
-        combined_requests = list(chain(requests1.values('id', 'sender__username', 'status'),
-                                   requests2.values('id', 'recipient__username', 'status')))
+        combined_requests = list(chain(requests1.values('id', 'recipient__username', 'status'),
+                                   requests2.values('id', 'sender__username', 'status')))
         return combined_requests
     
     # CHECK IF TWO USERS ARE FRIENDS
