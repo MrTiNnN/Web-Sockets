@@ -263,23 +263,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
     # RETURNS THE MESSAGE SEND TO A USER
     @database_sync_to_async
     def get_friend_requests(self, user):
-        friend_requests = FriendRequest.objects.filter(recipient = user)
-        return list(friend_requests.values('id', 'sender', 'recipient', 'status'))
+        friend_requests = FriendRequest.objects.filter(recipient = user).select_related('sender', 'recipient')
+        return list(friend_requests.values('id', 'recipient__username', 'recipient__username', 'status'))
     
     # GET FRIEND REQUEST THAT YOU SEND
     @database_sync_to_async
     def get_friend_requests_send_from_you(self, user):
-        friend_requests = FriendRequest.objects.filter(sender = user)
-        return list(friend_requests.values('id', 'sender', 'recipient', 'status'))
+        friend_requests = FriendRequest.objects.filter(sender = user).select_related('sender', 'recipient')
+        return list(friend_requests.values('id', 'sender__username', 'recipient__username', 'status'))
     
     # GET WHO IS YOUR FRINED
     @database_sync_to_async
     def get_user_friends(self, user):   
-        requests1 = FriendRequest.objects.filter(sender=user, status="accepted")
-        requests2 = FriendRequest.objects.filter(recipient=user, status="accepted")
+        requests1 = FriendRequest.objects.filter(sender=user, status="accepted").select_related('sender', 'recipient')
+        requests2 = FriendRequest.objects.filter(recipient=user, status="accepted").select_related('sender', 'recipient')
         
-        combined_requests = list(chain(requests1.values('id', 'sender', 'recipient', 'status'),
-                                   requests2.values('id', 'sender', 'recipient', 'status')))
+        combined_requests = list(chain(requests1.values('id', 'sender__username', 'recipient__username', 'status'),
+                                   requests2.values('id', 'sender__username', 'recipient__username', 'status')))
         return combined_requests
     
     # CHECK IF TWO USERS ARE FRIENDS
