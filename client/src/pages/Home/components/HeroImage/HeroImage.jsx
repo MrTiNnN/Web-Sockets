@@ -26,6 +26,7 @@ const HeroImage = () => {
     // })
 
     return (
+        <></>
         // <div className='hero-image-canva'>
         //     <Canvas
         //         camera={{

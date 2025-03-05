@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import { DataContext } from "../../context/DataContext";
 import './chat.less'
 import { useParams } from "react-router-dom";
+import Sidebar from "../../components/Sidebar/Sidebar";
 
 const Chat = () => {
     // Holds the chat
@@ -89,7 +90,7 @@ const Chat = () => {
         if(data.message) {
           // console.log({ message: data.message, sender__username: data.username })
           setMessages((prev) => [...prev, { message: data.message, sender__username: data.username }])
-          chatRef.current.scrollTop = chatRef.current.scrollHeight
+          // chatRef.current.scrollTop = chatRef.current.scrollHeight
         }
         
         // Handles loading more messages
@@ -141,35 +142,39 @@ const Chat = () => {
 
 
     return (
-      error ?
-      <p>{error}</p>
-      :
-      <div className="chat-container">
+      <>
+        {
+          error ?
+          <p>{error}</p>
+          :
+          <div className="chat-container">
 
-        <h1>{username}</h1>
-        <div className="chat" onScroll={() => handleLoadMore(messages[0].id)} ref={chatRef}>
-          {
-            messages.map((msg, index) => (
-              <div key={index}>
-                {msg.sender__username && <strong>{msg.sender__username}: </strong>}
-                {msg.message}
-              </div>
-            ))
-          }
-        </div>
+            <h1>{username}</h1>
+            <div className="chat" onScroll={() => handleLoadMore(messages[0].id)} ref={chatRef}>
+              {
+                messages.map((msg, index) => (
+                  <div key={index}>
+                    {msg.sender__username && <strong>{msg.sender__username}: </strong>}
+                    {msg.message}
+                  </div>
+                ))
+              }
+            </div>
 
-        <form onSubmit={(e) => sendMessage(e)}>
-          <input
-            type="text"
-            placeholder="Type your message..."
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-          />
+            <form onSubmit={(e) => sendMessage(e)}>
+              <input
+                type="text"
+                placeholder="Type your message..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+              />
 
-          <button type="submit">Send</button>
-        </form>
+              <button type="submit">Send</button>
+            </form>
 
-      </div>
+          </div>   
+        }
+      </>
     );
 };
 

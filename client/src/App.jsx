@@ -7,19 +7,24 @@ import Register from "./pages/Register/Register";
 import Chat from "./pages/Chat/Chat";
 import Friends from "./pages/Friends/Friends";
 import Nav from "./components/Nav/Nav";
+import Dashboard from "./pages/Dashboard/Dashboard";
 
 function App() {
   return (
     <BrowserRouter>
       <DataProvider>
         <LayoutGrid type='screen' />
-        <Nav />
+        {/* <Nav /> */}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/chat/:username" element={<Chat />} />
-          <Route path="/friends" element={<Friends />} />
+
+          <Route path="/dashboard" element={<Dashboard />}>
+            <Route path="friends" element={<Friends />} />
+            <Route path="chat/:username" element={<Chat />} />
+          </Route>
+
         </Routes>
       </DataProvider>
     </BrowserRouter>

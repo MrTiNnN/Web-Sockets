@@ -1,5 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react"
 import { DataContext } from "../../context/DataContext"
+import Sidebar from "../../components/Sidebar/Sidebar"
+import '../../globalStyling/components.less'
 
 const Friends = () => {
     // Holds the username input for the friend request
@@ -175,6 +177,7 @@ const Friends = () => {
 
     return (
         <>
+            {/* <Sidebar chats={friends} /> */}
             <form onSubmit={(e) => handleSubmit(e)}>
                 <input
                     placeholder="Username"
