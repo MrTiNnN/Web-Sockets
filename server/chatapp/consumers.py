@@ -264,7 +264,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def get_friend_requests(self, user):
         friend_requests = FriendRequest.objects.filter(recipient = user).select_related('sender', 'recipient')
-        return list(friend_requests.values('id', 'recipient__username', 'recipient__username', 'status'))
+        return list(friend_requests.values('id', 'sender__username', 'recipient__username', 'status'))
     
     # GET FRIEND REQUEST THAT YOU SEND
     @database_sync_to_async
