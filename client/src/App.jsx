@@ -6,12 +6,14 @@ import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import Chat from "./pages/Chat/Chat";
 import Friends from "./pages/Friends/Friends";
+import Nav from "./components/Nav/Nav";
 
 function App() {
   return (
     <BrowserRouter>
       <DataProvider>
         <LayoutGrid type='screen' />
+        <Nav />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
