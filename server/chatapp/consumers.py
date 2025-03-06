@@ -166,21 +166,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             if recipient_username:
                 chat_group_name = self.get_chat_group_name(self.username, recipient_username)
-
-                if last_message_id == -1:
-                    last_message_id = await self.get_last_message_id(chat_group_name)
-                    messages = await self.get_messages_in_range(chat_group_name, last_message_id, batch_size, True)
-
-                    if not messages:
-                        await self.send(text_data=json.dumps({
-                            "error": "No more messages!",
-                        }))
-                        return
-                    
-                    await self.send(text_data=json.dumps({
-                        "action": "load_more_messages",
-                        "messages": messages,
-                    }))
+                
+                if last_message_id:
+                    pass
 
                 else:
                     last_message_id = await self.get_last_message_id(chat_group_name)
@@ -190,35 +178,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         }))
                         return
 
-                    messages = await self.get_messages_in_range(chat_group_name, last_message_id, batch_size, False)
+                messages = await self.get_messages_in_range(chat_group_name, last_message_id, batch_size)
 
-                    if not messages:
-                        await self.send(text_data=json.dumps({
-                            "error": "No more messages!",
-                        }))
-                        return
-                    
+                if not messages:
                     await self.send(text_data=json.dumps({
-                        "action": "load_more_messages",
-                        "messages": messages,
+                        "error": "No more messages!",
                     }))
+                    return
 
             else:
                 
-                if last_message_id == -1:
-                    last_message_id = await self.get_last_message_id(chat_group_name)
-                    messages = await self.get_messages_in_range(chat_group_name, last_message_id, batch_size, True)
-
-                    if not messages:
-                        await self.send(text_data=json.dumps({
-                            "error": "No more messages!",
-                        }))
-                        return
-                    
-                    await self.send(text_data=json.dumps({
-                        "action": "load_more_messages",
-                        "messages": messages,
-                    }))
+                if last_message_id:
+                    pass
 
                 else:
                     last_message_id = await self.get_last_message_id("chat_room")
@@ -228,19 +199,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         }))
                         return
                 
-                    messages = await self.get_messages_in_range("chat_room", last_message_id, batch_size, False)
+                messages = await self.get_messages_in_range("chat_room", last_message_id, batch_size)
 
-                    if not messages:
-                        await self.send(text_data=json.dumps({
-                            "error": "No more messages!",
-                        }))
-                        return
-                    
+                if not messages:
                     await self.send(text_data=json.dumps({
-                        "action": "load_more_messages",
-                        "messages": messages,
+                        "error": "No more messages!",
                     }))
+                    return
 
+            await self.send(text_data=json.dumps({
+                "action": "load_more_messages",
+                "messages": messages,
+            }))
 
         # GETS THE FRIEND REQUESTS OF A USER
         elif action == "get_friend_requests":
@@ -299,21 +269,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     # GETS THE MESSAGES WANTED TO SEND
     @database_sync_to_async
-    def get_messages_in_range(self, chat_room, last_message_id, batch_size, is_first):
+    def get_messages_in_range(self, chat_room, last_message_id, batch_size):
         start_id = last_message_id - batch_size
-        
-        if is_first == True:
-            messages = ChatMessages.objects.filter(
-                chat_room=chat_room,
-                id__lte=last_message_id,
-                id__gte=start_id,  
-            )
-        else:
-            messages = ChatMessages.objects.filter(
-                chat_room=chat_room,
-                id__lt=last_message_id,
-                id__gte=start_id,  
-            )
+
+        messages = ChatMessages.objects.filter(
+            chat_room=chat_room,
+            id__lte=last_message_id,
+            id__gte=start_id,  
+        )
 
         return list(messages.values("id", "message", "sender__username"))
 
