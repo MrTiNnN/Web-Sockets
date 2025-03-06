@@ -28,39 +28,6 @@ const Chat = () => {
 
 
 
-    useEffect(() => {
-      if(messages.length <= 51) chatRef.current.scrollTop = chatRef.current.scrollHeight
-    }, [messages.length])
-
-
-
-    // Stores the chat box
-    const chatRef = useRef()
-    const [chatScroll, setChatScroll] = useState(0)
-
-    useEffect(() => {
-      console.log(chatScroll)
-    }, [chatScroll]) 
-
-
-
-    // Loads more messages
-    const handleLoadMore = (last_message_id) => {
-
-      if(chatRef.current.scrollTop == 0) {
-
-        wsRef.current.send(JSON.stringify({
-          action: "load_more_messages",
-          recipient: username,
-          last_message_id
-        }))
-
-      }
-
-    }
-
-
-
     // Connects the web socket server
     useEffect(() => {
       wsRef.current = new WebSocket(`ws://localhost:8000/ws/chat/?token=${access}`);
@@ -85,7 +52,11 @@ const Chat = () => {
 
         // Handles join message
         if(data.action === "join_friend_chat") {
-          handleLoadMore(0)
+          wsRef.current.send(JSON.stringify({
+            action: "load_more_messages",
+            recipient: username,
+            last_message_id: 0
+          }))
           setMessages((prev) => [...prev, { message: data.message, type: "join" }])
         }
 
@@ -103,12 +74,6 @@ const Chat = () => {
             }
           })
           setMessages((prev) => [...newMessages, ...prev])
-          if(messages.length > 51) {
-            setChatScroll(chatRef.current.scrollTop)
-            // chatRef.current.scrollTop = chatRef.current.scrollHeight
-            // console.log(chatRef.current.children.length)
-            // console.log(chatRef.current.children[chatRef.current.children.length - 1])
-          }
         }
         
         // Handles errors
@@ -142,9 +107,8 @@ const Chat = () => {
 
             <div className="chat">
               <ChatBox
-                handleLoadMore={handleLoadMore}
+                wsRef={wsRef}
                 messages={messages}
-                chatRef={chatRef}
               />
 
               <TypeMessage
