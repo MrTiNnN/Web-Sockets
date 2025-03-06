@@ -172,6 +172,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
                 else:
                     last_message_id = await self.get_last_message_id(chat_group_name)
+                    if last_message_id == None:
+                        await self.send(text_data=json.dumps({
+                            "error": "No messages found!",
+                        }))
 
                 messages = await self.get_messages_in_range(chat_group_name, last_message_id, batch_size)
 
@@ -188,6 +192,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
                 else:
                     last_message_id = await self.get_last_message_id("chat_room")
+                    if last_message_id == None:
+                        await self.send(text_data=json.dumps({
+                            "error": "No messages found!",
+                        }))
                 
                 messages = await self.get_messages_in_range("chat_room", last_message_id, batch_size)
 
