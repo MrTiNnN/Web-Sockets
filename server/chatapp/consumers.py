@@ -158,9 +158,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
             recipient_username = data.get("recipient")
             batch_size = 50
 
+            if last_message_id == 0:
+                    await self.send(text_data=json.dumps({
+                        "error": "No more messages!",
+                    }))
+                    return
+
             if recipient_username:
                 chat_group_name = self.get_chat_group_name(self.username, recipient_username)
-
+                
                 if last_message_id:
                     pass
 
@@ -176,6 +182,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     return
 
             else:
+                
                 if last_message_id:
                     pass
 
