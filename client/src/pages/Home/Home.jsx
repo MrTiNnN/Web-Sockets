@@ -6,7 +6,7 @@ import './home.less'
 const Home = () => {
     return (
         <>
-            {/* <HeroImage /> */}
+            <HeroImage />
             
         </>
     )

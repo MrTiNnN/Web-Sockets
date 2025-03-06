@@ -55,11 +55,13 @@
 // MESSAGE
 .message-box {
     display: inline-flex;
-    justify-content: center;
     align-items: center;
 
     text-align: center;
     padding: 1.2rem 2.4rem;
+
+    text-align: left;
+    justify-content: start;
 
     border-radius: 3rem;
 
@@ -69,18 +71,16 @@
         background-color: var(--primary-shade-40);
         color: var(--primary-tint-80);
         border-bottom-right-radius: 0;
-        align-self: end;
-        text-align: right;
-        justify-content: end;
+        // align-self: end;
+        // text-align: right;
+        // justify-content: end;
     }
 
     &.in {
         background-color: var(--primary-tint-60);
         color: var(--primary-shade-40);
         border-top-left-radius: 0;
-        align-self: start;
-        text-align: left;
-        justify-content: start;
+        // align-self: start;
     }
 }
 
@@ -90,14 +90,14 @@
 .sidebar {
     background-color: var(--secondary);
     width: 36rem;
-    box-shadow: 0 0 2.6rem #c1c1c1;
+    box-shadow: 0 0 2.6rem rgba(149, 181, 251, 0.25);
     border-radius: 2rem;
     padding: 1.6rem 0;
     height: 100%;
 
     .title {
         color: var(--primary-shade-40);
-        padding: 0 1.2rem;
+        padding: 0 1.6rem;
     }
 
     .friends-button-container {
