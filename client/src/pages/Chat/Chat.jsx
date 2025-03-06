@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import { DataContext } from "../../context/DataContext";
 import './chat.less'
 import { useParams } from "react-router-dom";
-import Sidebar from "../../components/Sidebar/Sidebar";
+import user from "../../img/user.png"
+import { TbSend } from "react-icons/tb";
+import Message from "../../components/Message/Message"
 
 const Chat = () => {
     // Holds the chat
@@ -149,28 +151,40 @@ const Chat = () => {
           :
           <div className="chat-container">
 
-            <h1>{username}</h1>
-            <div className="chat" onScroll={() => handleLoadMore(messages[0].id)} ref={chatRef}>
-              {
-                messages.map((msg, index) => (
-                  <div key={index}>
-                    {msg.sender__username && <strong>{msg.sender__username}: </strong>}
-                    {msg.message}
-                  </div>
-                ))
-              }
+            <div className="title-box">
+              <img src={user} alt="Pfp" />
+              <h4 className="title">{username}</h4>
             </div>
 
-            <form onSubmit={(e) => sendMessage(e)}>
-              <input
-                type="text"
-                placeholder="Type your message..."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-              />
+            <div className="chat">
+              <div className="chat-box" onScroll={() => handleLoadMore(messages[0].id)} ref={chatRef}>
+                {
+                  messages.map((msg, index) => (
+                    // <div key={index}>
+                    //   {msg.sender__username && <strong>{msg.sender__username}: </strong>}
+                    //   {msg.message}
+                    // </div>
+                    <Message
+                      message={msg.message}
+                      type={msg.sender__username === username ? "in" : "out"}
+                    />
+                  ))
+                }
+              </div>
 
-              <button type="submit">Send</button>
-            </form>
+              <form className="type-message-form" onSubmit={(e) => sendMessage(e)}>
+                <input
+                  type="text"
+                  placeholder="Type your message..."
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                />
+
+                <button className="btn" type="submit">
+                  <TbSend className="icon" />
+                </button>
+              </form>
+            </div>
 
           </div>   
         }

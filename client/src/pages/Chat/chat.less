@@ -1,20 +1,76 @@
 .chat-container {
-    padding: 2rem;
+    // padding: 0 2rem
+    // background-color: aqua;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+
+    .title-box {
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        background-color: var(--secondary);
+        padding: 1.6rem;
+        border-radius: 2rem;
+        box-shadow: 0 0 2rem rgba(0, 68, 163, 0.1);
+        margin-bottom: 3.2rem;
+
+        img {
+            border-radius: 100%;
+            width: 4.8rem;
+            height: 4.8rem;
+        }
+    }
 
     .chat {
-        border: solid 0.1rem #ccc;
-        height: 30rem;
-        overflow-y: scroll;
-        margin-bottom: 1rem;
-        padding: 1rem;
-    }
+        padding: 0 6.4rem 0 1.2rem;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        gap: 3.2rem;
 
-    input {
-        width: 80%;
-        padding: 1rem;
-    }
+        .chat-box {
+            height: 30rem;
+            overflow-y: scroll;
 
-    button {
-        padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: start;
+            flex-grow: 1;
+        }
+
+        .type-message-form {
+            // background-color: aqua;
+            position: relative;
+
+            input {
+                width: 100%;
+                padding: 1.6rem 1.6rem;
+                border-radius: 5rem;
+                border: none;
+                // height: 5.6rem;
+                font-family: inherit;
+                font-size: 1.6rem;
+                background-color: var(--primary-tint-60);
+                color: var(--primary-shade-40);
+
+                &::placeholder {
+                    color: var(--primary-shade-10);
+                }
+            }
+        
+            .btn {
+                border-radius: 5rem;
+                position: absolute;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                right: -2rem;;
+
+                .icon {
+                    width: 2rem;
+                    height: 2rem;
+                }
+            }
+        }
     }
 }
