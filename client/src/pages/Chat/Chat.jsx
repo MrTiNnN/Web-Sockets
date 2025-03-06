@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import { DataContext } from "../../context/DataContext";
 import './chat.less'
 import { useParams } from "react-router-dom";
-import user from "../../img/user.png"
-import { TbSend } from "react-icons/tb";
-import Message from "../../components/Message/Message"
+import TitleBox from "./components/TitleBox/TitleBox";
+import ChatBox from "./components/ChatBox/ChatBox";
+import TypeMessage from "./components/TypeMessage/TypeMessage";
 
 const Chat = () => {
     // Holds the chat
@@ -12,9 +12,6 @@ const Chat = () => {
 
     // Holds all messages
     const [messages, setMessages] = useState([]);
-
-    // Holds the current message being typed
-    const [message, setMessage] = useState("");
 
     // Holds the error state for the chat
     const [error, setError] = useState(null)
@@ -77,8 +74,6 @@ const Chat = () => {
           action: "join_friend_chat",
           recipient: username
         }))
-
-        handleLoadMore(0)
       };
 
 
@@ -88,16 +83,26 @@ const Chat = () => {
         const data = JSON.parse(event.data)
         console.log(data)
 
+        // Handles join message
+        if(data.action === "join_friend_chat") {
+          handleLoadMore(0)
+          setMessages((prev) => [...prev, { message: data.message, type: "join" }])
+        }
+
         // Handles new message
-        if(data.message) {
-          // console.log({ message: data.message, sender__username: data.username })
-          setMessages((prev) => [...prev, { message: data.message, sender__username: data.username }])
-          // chatRef.current.scrollTop = chatRef.current.scrollHeight
+        if(data.action === "chat_message_private") {
+          setMessages((prev) => [...prev, { message: data.message, sender__username: data.username, type: "message" }])
         }
         
         // Handles loading more messages
         if(data.action && data.action === "load_more_messages") {
-          setMessages((prev) => [...data.messages, ...prev])
+          const newMessages = data.messages.map(currMessage => {
+            return {
+              ...currMessage,
+              type: "message"
+            }
+          })
+          setMessages((prev) => [...newMessages, ...prev])
           if(messages.length > 51) {
             setChatScroll(chatRef.current.scrollTop)
             // chatRef.current.scrollTop = chatRef.current.scrollHeight
@@ -125,24 +130,6 @@ const Chat = () => {
 
 
 
-    // Sends a message
-    const sendMessage = (e) => {
-      e.preventDefault()
-
-      if(message.trim() === "") return;
-      
-      const data = { 
-        action: "send_message",
-        message,
-        recipient: username
-      };
-      // console.log(data)
-      wsRef.current.send(JSON.stringify(data));
-      setMessage("");
-    };
-
-
-
     return (
       <>
         {
@@ -151,39 +138,18 @@ const Chat = () => {
           :
           <div className="chat-container">
 
-            <div className="title-box">
-              <img src={user} alt="Pfp" />
-              <h4 className="title">{username}</h4>
-            </div>
+            <TitleBox />
 
             <div className="chat">
-              <div className="chat-box" onScroll={() => handleLoadMore(messages[0].id)} ref={chatRef}>
-                {
-                  messages.map((msg, index) => (
-                    // <div key={index}>
-                    //   {msg.sender__username && <strong>{msg.sender__username}: </strong>}
-                    //   {msg.message}
-                    // </div>
-                    <Message
-                      message={msg.message}
-                      type={msg.sender__username === username ? "in" : "out"}
-                    />
-                  ))
-                }
-              </div>
+              <ChatBox
+                handleLoadMore={handleLoadMore}
+                messages={messages}
+                chatRef={chatRef}
+              />
 
-              <form className="type-message-form" onSubmit={(e) => sendMessage(e)}>
-                <input
-                  type="text"
-                  placeholder="Type your message..."
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                />
-
-                <button className="btn" type="submit">
-                  <TbSend className="icon" />
-                </button>
-              </form>
+              <TypeMessage
+                wsRef={wsRef}
+              />
             </div>
 
           </div>   
