@@ -43,7 +43,7 @@
 
     .sidebar {
         position: absolute;
-        width: 92%;
+        width: 96%;
         z-index: 1;
         display: none;
 
@@ -62,17 +62,32 @@
             }
         }
     }
+
+    .dashboard {
+        padding: 1.2rem;
+    }
+
+    .chat-container {
+        padding: 0;
+
+        .chat {
+            padding: 0;
+        }
+    }
 }
 
 @media( max-width: 520px ) {
     .section-friends {
         .add-friend-form {
             padding: 0;
-            // background-color: aqua;
 
             .btn {
                 right: 1.2rem;
             }
+        }
+
+        .lists-container {
+            padding: 0;
         }
     }
 }

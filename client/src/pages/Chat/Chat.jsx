@@ -59,7 +59,7 @@ const Chat = () => {
           const data = {
             action: "load_more_messages",
             recipient: username,
-            last_message_id: -1
+            last_message_id: null
           }
           wsRef.current.send(JSON.stringify(data))
           console.log(data)
