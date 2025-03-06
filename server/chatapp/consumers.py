@@ -14,6 +14,8 @@ from user.models import CustomUser
 from .models import FriendRequest, ChatMessages
 from channels.db import database_sync_to_async
 
+is_repeted = False
+
 # JWT BASE64 URL DECODE
 def base64_url_decode(base64_url):
     """Base64 URL decode without any library"""
@@ -61,6 +63,7 @@ def check_token_validity(jwt):
 # MAIN CONSUMER
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        global is_repeted
         # GET TOKEN FROM QUERY
         query_string = self.scope["query_string"].decode()
         query_params = parse_qs(query_string)
@@ -89,6 +92,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_discard(f"user_{self.username}", self.channel_name)
 
     async def receive(self, text_data):
+        global is_repeted
         data = json.loads(text_data) # load body
         action = data.get("action") # type of action
 
@@ -177,8 +181,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             "error": "No messages found!",
                         }))
                         return
-
+                
                 messages = await self.get_messages_in_range(chat_group_name, last_message_id, batch_size)
+
+
 
                 if not messages:
                     await self.send(text_data=json.dumps({
@@ -207,10 +213,25 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     }))
                     return
 
-            await self.send(text_data=json.dumps({
-                "action": "load_more_messages",
-                "messages": messages,
-            }))
+            is_last = await self.get_helper_for_last_object(chat_group_name, last_message_id)
+            if is_last == True:
+                is_repeted = False
+
+            if is_repeted == False:
+                await self.send(text_data=json.dumps({
+                    "action": "load_more_messages",
+                    "messages": messages,
+                }))
+            elif is_repeted == True:
+                await self.send(text_data=json.dumps({
+                    "error": "This is the end of the chat!"
+                }))
+
+            is_last = await self.get_helper_for_last_object(chat_group_name, last_message_id)
+            if is_last == True:
+                is_repeted = False
+            elif is_last == False:
+                is_repeted = True
 
         # GETS THE FRIEND REQUESTS OF A USER
         elif action == "get_friend_requests":
@@ -288,6 +309,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if last_message:
             return last_message.id
         return None
+
+    @database_sync_to_async
+    def get_helper_for_last_object(self, chat_room, last_message_id):
+        messages = ChatMessages.objects.filter(
+            chat_room=chat_room,
+            id__lt=last_message_id,
+            id__gte=1,
+        )
+
+        if messages:
+            return True
+        else:
+            return False
 
     # RETURNS THE MESSAGE SEND TO A USER
     @database_sync_to_async
