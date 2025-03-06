@@ -17,7 +17,7 @@ const Home = () => {
                 <button className="btn">Chat now</button>
             </div>
 
-            <img className="hero-img" src={hero} alt="" />
+            <img className="hero-image" src={hero} alt="" />
         </section>
     )
 }

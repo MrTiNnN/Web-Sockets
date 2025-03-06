@@ -1,5 +1,8 @@
 import { useContext, useState } from "react"
 import { DataContext } from "../../context/DataContext"
+import './login.less'
+import hero from '../../img/hero.png'
+import user from '../../img/user.png'
 
 const Login = () => {
     // Gets global data from the context
@@ -42,23 +45,33 @@ const Login = () => {
 
 
     return (
-        <>
-            <form onSubmit={(e) => handleSubmit(e)}>
-                <input
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="email"
-                    type="email"
-                />
-                <input
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="password"
-                    type="password"
-                />
-                <button type="submit">Login</button>
-            </form>
-        </>
+        <section className="section-login">
+            <div className="form-container">
+                <div className="title-textbox">
+                    <img src={user} alt="Pfp" />
+                    <h2 className="title">Log in</h2>
+                    <p className="text">Welcome back! Enter your credentials, please.</p>
+                </div>
+
+                <form className="form" onSubmit={(e) => handleSubmit(e)}>
+                    <input
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="email"
+                        type="email"
+                    />
+                    <input
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="password"
+                        type="password"
+                    />
+                    <button type="submit">Login</button>
+                </form>
+            </div>
+
+            <img src={hero} className="hero-image" alt="Hero" />
+        </section>
     )
 }
 
