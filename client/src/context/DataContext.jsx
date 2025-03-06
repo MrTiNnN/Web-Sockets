@@ -78,19 +78,13 @@ const DataProvider = ({ children }) => {
             console.log("Connected to WebSocket");
 
             // Gets the user's friend list
-            socket.current.send(JSON.stringify({
-                action: "get_user_friends"
-            }))
+            socket.current.send(JSON.stringify({action: "get_user_friends"}))
 
-            // // Gets the user's received requests
-            // socket.current.send(JSON.stringify({
-            //     action: "get_friend_requests"
-            // }))
+            // Gets the user's received requests
+            socket.current.send(JSON.stringify({action: "get_friend_requests"}))
 
-            // // Gets the user's pending requests
-            // socket.current.send(JSON.stringify({
-            //     action: "get_friend_requests_send_from_you"
-            // }))
+            // Gets the user's pending requests
+            socket.current.send(JSON.stringify({action: "get_friend_requests_send_from_you"}))
         };
 
 

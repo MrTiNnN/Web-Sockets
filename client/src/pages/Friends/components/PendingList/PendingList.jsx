@@ -1,7 +1,14 @@
+import { useContext } from "react";
 import user from "../../../../img/user.png"
 import { IoCheckmark, IoClose } from "react-icons/io5";
+import { DataContext } from "../../../../context/DataContext";
 
-const PendingList = ({ socket, pending, setPending, friends, setFriends }) => {
+const PendingList = () => {
+    // Gets global data from the context
+    const { socket, pending, setPending, friends, setFriends } = useContext(DataContext)
+
+
+
     // Accepts a friend request
     const handleAcceptFriend = (sender) => {
         socket.current.send(JSON.stringify({
@@ -32,6 +39,7 @@ const PendingList = ({ socket, pending, setPending, friends, setFriends }) => {
 
 
     return (
+        pending && pending.length > 0 &&
         <div className="list-container">
             <p className="label"><strong>Received</strong></p>
             <div className="list">

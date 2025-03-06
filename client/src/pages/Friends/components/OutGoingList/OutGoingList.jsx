@@ -1,7 +1,12 @@
+import { useContext } from "react"
 import user from "../../../../img/user.png"
+import { DataContext } from "../../../../context/DataContext"
 
-const OutGoingList = ({ outGoing }) => {
+const OutGoingList = () => {
+    const { outGoing } = useContext(DataContext)
+
     return (
+        outGoing && outGoing.length > 0 &&
         <div className="list-container">
             <p className="label"><strong>Outgoing</strong></p>
             <div className="list">

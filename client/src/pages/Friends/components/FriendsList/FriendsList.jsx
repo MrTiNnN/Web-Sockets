@@ -1,9 +1,14 @@
 import { Link } from "react-router-dom"
 import user from "../../../../img/user.png"
 import { IoChatbubbleSharp } from "react-icons/io5";
+import { useContext } from "react";
+import { DataContext } from "../../../../context/DataContext";
 
-const FriendsList = ({ friends }) => {
+const FriendsList = () => {
+    const { friends } = useContext(DataContext)
+
     return (
+        friends && friends.length > 0 &&
         <div className="list-container">
             <p className="label"><strong>Friends</strong></p>
             <div className="list">

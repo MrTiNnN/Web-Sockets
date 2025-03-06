@@ -146,9 +146,18 @@
                 box-shadow: 0 0 1rem rgba(149, 181, 251, 0.25);
                 cursor: pointer;
 
+                color: var(--primary-shade-70);
+                text-decoration: none;
+
+                &.active {
+                    background-color: var(--primary-shade-40);
+                    color: var(--primary-tint-60);
+                }
+
                 img {
                     width: 4.8rem;
                     height: 4.8rem;
+                    border-radius: 100%;
                 }
                 
                 p {

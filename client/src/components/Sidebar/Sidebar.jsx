@@ -1,9 +1,15 @@
 import { FaUserFriends } from "react-icons/fa"
 import '../../globalStyling/components.less'
 import { NavLink } from "react-router-dom"
+import { useContext } from "react"
+import { DataContext } from "../../context/DataContext"
+import user from "../../img/user.png"
 
-const Sidebar = ({ chats = [] }) => {
-    console.log(chats)
+const Sidebar = () => {
+    // Gets global data from the context
+    const { friends } = useContext(DataContext)
+
+    
 
     return (
         <div className="sidebar">
@@ -21,11 +27,11 @@ const Sidebar = ({ chats = [] }) => {
 
                 <div className="chats">
                     {
-                        chats.map((chat, i) => (
-                            <div className="chat-button" key={i}>
-                                <img src="./img/user.png" alt="Pfp" />
+                        friends.map((chat, i) => (
+                            <NavLink to={`/dashboard/chat/${chat.username}`} className={({ isActive }) => `chat-button ${isActive ? "active" : null}`} key={i}>
+                                <img src={user} alt="Pfp" />
                                 <p>{chat.username}</p>
-                            </div>
+                            </NavLink>
                         ))
                     }
                 </div>

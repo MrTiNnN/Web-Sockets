@@ -1,6 +1,12 @@
-import { useState } from "react"
+import { useContext, useState } from "react"
+import { DataContext } from "../../../../context/DataContext"
 
-const FriendForm = ({ socket, outGoing, setOutGoing }) => {
+const FriendForm = () => {
+    // Gets global data from the context
+    const { socket, outGoing, setOutGoing } = useContext(DataContext)
+
+
+
     // Holds the username input for the friend request
     const [username, setUsername] = useState("")
 
