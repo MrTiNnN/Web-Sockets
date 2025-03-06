@@ -17,8 +17,10 @@ const ChatBox = ({ messages, wsRef }) => {
     // Maintains the scroll position when we load more messages
     const prevHeightRef = useRef(0)
     useEffect(() => {
-        chatRef.current.scrollTop += chatRef.current.scrollHeight - prevHeightRef.current
-        prevHeightRef.current = chatRef.current.scrollHeight
+        if(messages.length) {
+            chatRef.current.scrollTop += chatRef.current.scrollHeight - prevHeightRef.current
+            prevHeightRef.current = chatRef.current.scrollHeight
+        }
     }, [messages.length])
 
 
@@ -38,6 +40,7 @@ const ChatBox = ({ messages, wsRef }) => {
 
 
     return (
+        messages && messages.length > 0 &&
         <div className="chat-box" onScroll={() => chatRef.current.scrollTop == 0 ? handleLoadMore(messages[0].id) : null} ref={chatRef}>
             {
                 messages.map((msg, index) => (

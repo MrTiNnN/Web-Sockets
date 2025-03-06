@@ -101,7 +101,6 @@ const DataProvider = ({ children }) => {
                     if(data.user_friends && data.user_friends.length) {
                         const friendArr = data.user_friends.map(friend => {
                             return {
-                                id: friend.id,
                                 username: friend.sender__username ? friend.sender__username : friend.recipient__username
                             }
                         })
@@ -146,6 +145,7 @@ const DataProvider = ({ children }) => {
             // Handles an accepted request
             if(data.action === "friend_request_accepted") {
                 const newOutGoing = outGoing.filter(request => request.recipient !== data.sender)
+                console.log(newOutGoing)
                 setOutGoing([...newOutGoing])
 
                 setFriends([{ username: data.sender }, ...friends])

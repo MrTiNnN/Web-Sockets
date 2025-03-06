@@ -30,12 +30,16 @@ const Chat = () => {
 
     // Connects the web socket server
     useEffect(() => {
-      wsRef.current = new WebSocket(`ws://localhost:8000/ws/chat/?token=${access}`);
+      if(!wsRef.current || !wsRef.current.readyState) {
+        wsRef.current = new WebSocket(`ws://localhost:8000/ws/chat/?token=${access}`);
+      }
       
 
       // Logs the successful connection
       wsRef.current.onopen = () => {
         console.log("Connected to WebSocket");
+
+        setMessages([])
 
         wsRef.current.send(JSON.stringify({
           action: "join_friend_chat",
@@ -54,10 +58,9 @@ const Chat = () => {
         if(data.action === "join_friend_chat") {
           wsRef.current.send(JSON.stringify({
             action: "load_more_messages",
-            recipient: username,
-            last_message_id: 0
+            recipient: username
           }))
-          setMessages((prev) => [...prev, { message: data.message, type: "join" }])
+          // setMessages((prev) => [...prev, { message: data.message, type: "join" }])
         }
 
         // Handles new message
@@ -97,7 +100,14 @@ const Chat = () => {
 
     // Handles page change
     useEffect(() => {
-      console.log("Changed page")
+      // if(wsRef.current) {
+      //   wsRef.current.send(JSON.stringify({
+      //     action: "join_friend_chat",
+      //     recipient: username
+      //   }))
+      // }
+      // console.log(wsRef.current.readyState)
+      if(wsRef.current.readyState) window.location.reload()
     }, [username])
 
 
