@@ -17,7 +17,6 @@ const ChatBox = ({ messages, wsRef }) => {
     // Maintains the scroll position when we load more messages
     const prevHeightRef = useRef(0)
     useEffect(() => {
-        console.log(prevHeightRef.current)
         chatRef.current.scrollTop += chatRef.current.scrollHeight - prevHeightRef.current
         prevHeightRef.current = chatRef.current.scrollHeight
     }, [messages.length])
@@ -40,33 +39,21 @@ const ChatBox = ({ messages, wsRef }) => {
 
     return (
         <div className="chat-box" onScroll={() => chatRef.current.scrollTop == 0 ? handleLoadMore(messages[0].id) : null} ref={chatRef}>
-        {/* // <div className="chat-box" id="chat-box">
-        //     <InfiniteScroll
-        //         dataLength={messages.length}
-        //         next={() => handleLoadMore(messages[0].id)}
-        //         ref={chatRef}
-        //         className="chat-box-scroll"
-        //         scrollableTarget="chat-box"
-        //         hasMore={true}
-        //         inverse={true}
-        //     > */}
-                {
-                    messages.map((msg, index) => (
-                    msg.type === "message" ?
-                    <Message
-                        key={index}
-                        message={msg.message}
-                        type={msg.sender__username === username ? "in" : "out"}
-                    />
-                    :
-                    msg.type === "join" ?
-                    <p key={index} className="join-msg">{msg.message}</p>
-                    :
-                    null
-                    ))
-                }
-        {/* //     </InfiniteScroll> */}
-        {/* // </div> */}
+            {
+                messages.map((msg, index) => (
+                msg.type === "message" ?
+                <Message
+                    key={index}
+                    message={msg.message}
+                    type={msg.sender__username === username ? "in" : "out"}
+                />
+                :
+                msg.type === "join" ?
+                <p key={index} className="join-msg">{msg.message}</p>
+                :
+                null
+                ))
+            }
         </div>
     )
 }

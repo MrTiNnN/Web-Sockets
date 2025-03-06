@@ -95,6 +95,13 @@ const Chat = () => {
 
 
 
+    // Handles page change
+    useEffect(() => {
+      console.log("Changed page")
+    }, [username])
+
+
+
     return (
       <>
         {

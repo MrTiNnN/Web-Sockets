@@ -147,6 +147,8 @@ const DataProvider = ({ children }) => {
             if(data.action === "friend_request_accepted") {
                 const newOutGoing = outGoing.filter(request => request.recipient !== data.sender)
                 setOutGoing([...newOutGoing])
+
+                setFriends([{ username: data.sender }, ...friends])
             }
         };
 
