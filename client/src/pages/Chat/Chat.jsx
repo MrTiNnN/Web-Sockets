@@ -58,8 +58,7 @@ const Chat = () => {
         if(data.action === "join_friend_chat") {
           const data = {
             action: "load_more_messages",
-            recipient: username,
-            last_message_id: -1
+            recipient: username
           }
           wsRef.current.send(JSON.stringify(data))
           console.log(data)
