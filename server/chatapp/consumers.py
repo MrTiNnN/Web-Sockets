@@ -176,6 +176,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         await self.send(text_data=json.dumps({
                             "error": "No messages found!",
                         }))
+                        return
 
                 messages = await self.get_messages_in_range(chat_group_name, last_message_id, batch_size)
 
@@ -196,6 +197,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         await self.send(text_data=json.dumps({
                             "error": "No messages found!",
                         }))
+                        return
                 
                 messages = await self.get_messages_in_range("chat_room", last_message_id, batch_size)
 
