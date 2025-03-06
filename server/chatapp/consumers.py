@@ -274,7 +274,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         messages = ChatMessages.objects.filter(
             chat_room=chat_room,
-            id__lt=last_message_id,
+            id__lte=last_message_id,
             id__gte=start_id,  
         )
 
