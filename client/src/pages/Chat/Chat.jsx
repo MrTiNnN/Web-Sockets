@@ -56,10 +56,13 @@ const Chat = () => {
 
         // Handles join message
         if(data.action === "join_friend_chat") {
-          wsRef.current.send(JSON.stringify({
+          const data = {
             action: "load_more_messages",
-            recipient: username
-          }))
+            recipient: username,
+            last_message_id: null
+          }
+          wsRef.current.send(JSON.stringify(data))
+          console.log(data)
           // setMessages((prev) => [...prev, { message: data.message, type: "join" }])
         }
 
