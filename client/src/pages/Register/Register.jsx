@@ -1,9 +1,18 @@
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { DataContext } from "../../context/DataContext"
+import AccountForm from "../../components/AccountForm/AccountForm"
+import hero from '../../img/hero.png'
 
 const Register = () => {
     // Gets global data from the context
-    const { crud, navigate } = useContext(DataContext)
+    const { access, crud, navigate } = useContext(DataContext)
+
+
+
+    // Redirects user if they are already logged in
+    useEffect(() => {
+        if(access) navigate('/dashboard/friends')
+    }, [access])
 
 
 
@@ -11,6 +20,7 @@ const Register = () => {
     const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [error, setError] = useState(null)
 
 
 
@@ -33,33 +43,49 @@ const Register = () => {
         if(response.status == 201) {
             navigate('/login')
         }
+        else {
+            setError(response.response.data.error)
+        }
     }
 
 
 
     return (
-        <>
-            <form onSubmit={(e) => handleSubmit(e)}>
-                <input
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="email"
-                    type="email"
-                />
-                <input
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="username"
-                />
-                <input
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="password"
-                    type="password"
-                />
-                <button type="submit">Register</button>
-            </form>
-        </>
+        <section className="section-account">
+            <img src={hero} className="hero-image" alt="Hero" />
+            <AccountForm 
+                title="Register"
+                text="Make an account to start chatting now!"
+                handleSubmit={handleSubmit}
+                error={error}
+                inputs={[
+                    {
+                        type: "email",
+                        label: "Email",
+                        value: email,
+                        setValue: setEmail
+                    },
+                    {
+                        type: "text",
+                        label: "Username",
+                        value: username,
+                        setValue: setUsername
+                    },
+                    {
+                        type: "password",
+                        label: "Password",
+                        value: password,
+                        setValue: setPassword
+                    }
+                ]}
+                button="Register"
+                messages={[
+                    "But I already have an account...",
+                    "Log in now!"
+                ]}
+                link="/login"
+            />
+        </section>
     )
 }
 

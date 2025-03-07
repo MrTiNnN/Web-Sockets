@@ -1,4 +1,17 @@
+@media( max-width: 1200px ) {
+    .section-account {
+        .hero-image {
+            display: none;
+        }
+    }
+}
+
 @media( max-width: 1024px ) {
+    :root {
+        --grid-columns: 6;
+        --grid-padding: 4.8rem;
+    }
+
     .sidebar {
         width: 24rem;
 
@@ -18,9 +31,27 @@
             padding: 0 1.2rem;
         }
     }
+
+    .section-account {
+        .account-form-container {
+            .form {
+                margin-bottom: 4.8rem;
+            }
+
+            .link-message-container {
+                padding: 0 4.8rem;
+                gap: 1.2rem;
+            }
+        }
+    }
 }
 
 @media( max-width: 720px ) {
+    :root {
+        --grid-columns: 6;
+        --grid-padding: 3.2rem;
+    }
+
     .sidebar-icon {
         width: 3.2rem;
         height: 3.2rem;
@@ -74,6 +105,15 @@
             padding: 0;
         }
     }
+
+    .section-account {
+        .account-form-container {
+
+            .link-message-container {
+                padding: 0;
+            }
+        }
+    }
 }
 
 @media( max-width: 520px ) {
@@ -88,6 +128,12 @@
 
         .lists-container {
             padding: 0;
+        }
+    }
+
+    .section-account {
+        .account-form-container {
+            padding: 4.8rem 2.4rem;
         }
     }
 }

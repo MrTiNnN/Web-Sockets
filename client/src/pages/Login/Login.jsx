@@ -1,18 +1,25 @@
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { DataContext } from "../../context/DataContext"
-import './login.less'
 import hero from '../../img/hero.png'
-import user from '../../img/user.png'
+import AccountForm from "../../components/AccountForm/AccountForm"
 
 const Login = () => {
     // Gets global data from the context
-    const { crud, setAccess, setRefresh, navigate } = useContext(DataContext)
+    const { crud, access, setAccess, setRefresh, navigate } = useContext(DataContext)
+
+
+
+    // Redirects user if they are already logged in
+    useEffect(() => {
+        if(access) navigate('/dashboard/friends')
+    }, [access])
     
     
     
     // Holds the state for the form
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [error, setError] = useState(null)
 
 
 
@@ -40,35 +47,42 @@ const Login = () => {
 
             navigate("/friends")
         }
+        
+        else {
+            setError(response.response.data.error)
+        }
     }
 
 
 
     return (
-        <section className="section-login">
-            <div className="form-container">
-                <div className="title-textbox">
-                    <img src={user} alt="Pfp" />
-                    <h2 className="title">Log in</h2>
-                    <p className="text">Welcome back! Enter your credentials, please.</p>
-                </div>
-
-                <form className="form" onSubmit={(e) => handleSubmit(e)}>
-                    <input
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="email"
-                        type="email"
-                    />
-                    <input
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="password"
-                        type="password"
-                    />
-                    <button type="submit">Login</button>
-                </form>
-            </div>
+        <section className="section-account">
+            <AccountForm
+                title="Log in"
+                text="Welcome back! Enter your credentials, please."
+                handleSubmit={handleSubmit}
+                error={error}
+                inputs={[
+                    {
+                        type: "email",
+                        label: "Email",
+                        value: email,
+                        setValue: setEmail
+                    },
+                    {
+                        type: "password",
+                        label: "Password",
+                        value: password,
+                        setValue: setPassword
+                    }
+                ]}
+                button="Log in"
+                messages={[
+                    "I don't have an account...",
+                    "Register now!"
+                ]}
+                link="/register"
+            />
 
             <img src={hero} className="hero-image" alt="Hero" />
         </section>
