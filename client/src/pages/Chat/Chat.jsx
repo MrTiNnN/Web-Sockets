@@ -54,12 +54,15 @@ const Chat = () => {
         const data = JSON.parse(event.data)
         console.log(data)
 
+        // setMessages([])
+
         // Handles join message
         if(data.action === "join_friend_chat") {
           const data = {
             action: "load_more_messages",
             recipient: username
           }
+          
           wsRef.current.send(JSON.stringify(data))
           console.log(data)
           // setMessages((prev) => [...prev, { message: data.message, type: "join" }])
@@ -82,7 +85,10 @@ const Chat = () => {
         }
         
         // Handles errors
-        if(data.error) setError(data.error)
+        if(data.error) {
+          // setError(data.error)
+          setMessages((prev) => [{ message: data.error, type: "error" }, ...prev])
+        }
       };
 
 
@@ -102,13 +108,6 @@ const Chat = () => {
 
     // Handles page change
     useEffect(() => {
-      // if(wsRef.current) {
-      //   wsRef.current.send(JSON.stringify({
-      //     action: "join_friend_chat",
-      //     recipient: username
-      //   }))
-      // }
-      // console.log(wsRef.current.readyState)
       if(wsRef.current.readyState) window.location.reload()
     }, [username])
 

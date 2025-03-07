@@ -28,13 +28,15 @@ const ChatBox = ({ messages, wsRef }) => {
     // Loads more messages
     const handleLoadMore = (last_message_id) => {
         console.log("LOADING MORE")
+        console.log(last_message_id)
 
-        wsRef.current.send(JSON.stringify({
-            action: "load_more_messages",
-            recipient: username,
-            last_message_id
-        }))
-
+        if(last_message_id) {
+            wsRef.current.send(JSON.stringify({
+                action: "load_more_messages",
+                recipient: username,
+                last_message_id
+            }))
+        }
     }
 
 
@@ -51,7 +53,7 @@ const ChatBox = ({ messages, wsRef }) => {
                     type={msg.sender__username === username ? "in" : "out"}
                 />
                 :
-                msg.type === "join" ?
+                msg.type === "join" || msg.type === "error" ?
                 <p key={index} className="join-msg">{msg.message}</p>
                 :
                 null
