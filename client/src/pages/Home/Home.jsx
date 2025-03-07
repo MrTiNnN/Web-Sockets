@@ -3,6 +3,7 @@ import Sidebar from "../../components/Sidebar/Sidebar"
 import HeroImage from "./components/HeroImage/HeroImage"
 import './home.less'
 import hero from "../../img/hero.png"
+import { Link } from "react-router-dom"
 
 const Home = () => {
     return (
@@ -14,7 +15,7 @@ const Home = () => {
                     <p className="text">Your best place to chat, chill and gather memories with your friends</p>
                 </div>
 
-                <button className="btn">Chat now</button>
+                <Link to='/login' className="btn">Chat now</Link>
             </div>
 
             <img className="hero-image" src={hero} alt="" />
