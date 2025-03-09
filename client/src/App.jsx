@@ -8,6 +8,7 @@ import Chat from "./pages/Chat/Chat";
 import Friends from "./pages/Friends/Friends";
 import Nav from "./components/Nav/Nav";
 import Dashboard from "./pages/Dashboard/Dashboard";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
@@ -15,6 +16,13 @@ function App() {
       <DataProvider>
         <LayoutGrid type='screen' />
         {/* <Nav /> */}
+        <Toaster
+          position="bottom-right"
+          toastOptions={{
+            duration: 5000,
+          }}
+        />
+
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />

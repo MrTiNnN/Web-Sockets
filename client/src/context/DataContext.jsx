@@ -91,7 +91,6 @@ const DataProvider = ({ children }) => {
 
             // Receives the messages from the web socket server
             socket.current.onmessage = (event) => {
-                // const data = JSON.parse(event.data);
                 const data = JSON.parse(event.data);
                 console.log("📩 Message received:", data);
 

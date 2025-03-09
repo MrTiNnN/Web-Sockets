@@ -41,10 +41,10 @@ const Chat = () => {
 
         setMessages([])
 
-        // wsRef.current.send(JSON.stringify({
-        //   action: "join_friend_chat",
-        //   recipient: username
-        // }))
+        wsRef.current.send(JSON.stringify({
+          action: "join_friend_chat",
+          recipient: username
+        }))
       };
 
 
@@ -101,12 +101,13 @@ const Chat = () => {
 
     // Handles page change
     useEffect(() => {
-      if(wsRef.current.readyState) {
-        wsRef.current.send(JSON.stringify({
-          action: "join_friend_chat",
-          recipient: username
-        }))
-      }
+      // if(wsRef.current.readyState) {
+      //   wsRef.current.send(JSON.stringify({
+      //     action: "join_friend_chat",
+      //     recipient: username
+      //   }))
+      // }
+      if(wsRef.current.readyState) window.location.reload()
     }, [username])
 
     useEffect(() => {
