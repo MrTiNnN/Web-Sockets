@@ -1,6 +1,3 @@
-import { ToastBar, toast } from "react-hot-toast"
-import { IoClose } from "react-icons/io5";
-
 const ToastNotification = ({ username = "", message = "" }) => {
     return (
         <div className="toast-notification">

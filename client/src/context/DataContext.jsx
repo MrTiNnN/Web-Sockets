@@ -1,6 +1,8 @@
 import axios from "axios";
 import { createContext, useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import ToastNotification from "../pages/Chat/components/ToastNotification/ToastNotification";
 
 export const DataContext = createContext({ })
 
@@ -140,6 +142,7 @@ const DataProvider = ({ children }) => {
                 if(data.action === "friend_request") {
                     const request = { sender: data.sender }
                     setPending((prev) => [request, ...prev])
+                    toast.custom(<ToastNotification username={data.sender} message="sent you a friend request." />)
                 }
 
                 // Handles an accepted request
@@ -149,6 +152,8 @@ const DataProvider = ({ children }) => {
                     setOutGoing([...newOutGoing])
 
                     setFriends([{ username: data.sender }, ...friends])
+
+                    toast.custom(<ToastNotification username={data.sender} message="accepted your friend request." />)
                 }
             };
 
