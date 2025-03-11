@@ -175,6 +175,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     pass
 
                 else:
+                    is_repeted = False
                     last_message_id = await self.get_last_message_id(chat_group_name)
                     if last_message_id == None:
                         await self.send(text_data=json.dumps({
